@@ -17,5 +17,9 @@ path = "src/make_cheapo_request_async.rs"
 name = "poll_forever"
 path = "src/poll_forever.rs"
 
+[[bin]]
+name = "many_requests"
+path = "src/many_requests.rs"
+
 [dependencies]
-async-std = { version = "1.12.0", features = ["attributes"] }
+async-std = { version = "1.12.0", features = ["attributes", "unstable"] }
