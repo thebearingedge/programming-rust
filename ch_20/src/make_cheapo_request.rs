@@ -13,6 +13,7 @@ fn cheapo_request(host: &str, port: u16, path: &str) -> std::io::Result<String> 
 
     Ok(response)
 }
+
 fn main() {
     match cheapo_request("example.com", 80, "/") {
         Ok(response) => println!("{}", response),

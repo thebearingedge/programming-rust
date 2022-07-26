@@ -10,6 +10,10 @@ name = "make_cheapo_request"
 path = "src/make_cheapo_request.rs"
 
 [[bin]]
+name = "make_cheapo_request_async"
+path = "src/make_cheapo_request_async.rs"
+
+[[bin]]
 name = "poll_forever"
 path = "src/poll_forever.rs"
 
