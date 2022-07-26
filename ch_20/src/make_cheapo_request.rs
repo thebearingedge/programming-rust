@@ -1,7 +1,7 @@
 use std::io::prelude::*;
 use std::net;
 
-pub fn cheapo_request(host: &str, port: u16, path: &str) -> std::io::Result<String> {
+fn cheapo_request(host: &str, port: u16, path: &str) -> std::io::Result<String> {
     let mut socket = net::TcpStream::connect((host, port))?;
     let request = format!("GET {} HTTP/1.1\r\nHost: {}\r\n\r\n", path, host);
 
@@ -12,4 +12,10 @@ pub fn cheapo_request(host: &str, port: u16, path: &str) -> std::io::Result<Stri
     socket.read_to_string(&mut response)?;
 
     Ok(response)
+}
+fn main() {
+    match cheapo_request("example.com", 80, "/") {
+        Ok(response) => println!("{}", response),
+        Err(error) => panic!("{}", error),
+    }
 }
