@@ -25,7 +25,18 @@ path = "src/many_requests.rs"
 name = "many_requests_proper"
 path = "src/many_requests_proper.rs"
 
+[[bin]]
+name = "chat_server"
+path = "src/async-chat/src/bin/server/main.rs"
+
+[[bin]]
+name = "chat_client"
+path = "src/async-chat/src/bin/client.rs"
+
 [dependencies]
 async-std = { version = "1.12.0", features = ["attributes", "unstable"] }
 futures = "0.3.21"
+serde = { version = "1.0.140", features = ["derive", "rc"] }
+serde_json = "1.0.82"
 surf = "2.3.2"
+tokio = { version = "1.20.1", features = ["sync"] }
