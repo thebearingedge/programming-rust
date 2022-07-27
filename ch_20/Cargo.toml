@@ -21,5 +21,10 @@ path = "src/poll_forever.rs"
 name = "many_requests"
 path = "src/many_requests.rs"
 
+[[bin]]
+name = "many_requests_proper"
+path = "src/many_requests_proper.rs"
+
 [dependencies]
 async-std = { version = "1.12.0", features = ["attributes", "unstable"] }
+surf = "2.3.2"
