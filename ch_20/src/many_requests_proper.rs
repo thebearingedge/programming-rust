@@ -1,3 +1,4 @@
+use futures;
 use surf;
 
 async fn make_many_requests() -> Vec<surf::Result<String>> {
@@ -9,20 +10,11 @@ async fn make_many_requests() -> Vec<surf::Result<String>> {
 
     let client = surf::Client::new();
 
-    let mut handles = vec![];
-
-    for url in urls {
-        let request = client.get(url).recv_string();
-        handles.push(async_std::task::spawn(request));
-    }
-
-    let mut responses = vec![];
-
-    for handle in handles {
-        responses.push(handle.await);
-    }
-
-    responses
+    futures::future::join_all(urls.iter().map(|url| {
+        let req = client.get(url).recv_string();
+        async_std::task::spawn(req)
+    }))
+    .await
 }
 
 #[async_std::main]

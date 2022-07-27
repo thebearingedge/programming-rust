@@ -27,4 +27,5 @@ path = "src/many_requests_proper.rs"
 
 [dependencies]
 async-std = { version = "1.12.0", features = ["attributes", "unstable"] }
+futures = "0.3.21"
 surf = "2.3.2"
