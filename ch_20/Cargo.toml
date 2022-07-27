@@ -33,6 +33,10 @@ path = "src/async-chat/src/bin/server/main.rs"
 name = "chat_client"
 path = "src/async-chat/src/bin/client.rs"
 
+[lib]
+name = "chat_lib"
+path = "src/async-chat/src/lib.rs"
+
 [dependencies]
 async-std = { version = "1.12.0", features = ["attributes", "unstable"] }
 futures = "0.3.21"
