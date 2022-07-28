@@ -12,17 +12,17 @@ async fn send_commands() -> ChatResult<()> {
          Type Ctrl + D (on *nix) or Ctrl + Z (on win) \
          to close the connection."
     );
-    let mut command_lines = io::BufReader::new(io::stdin()).lines();
-    while let Some(command_result) = command_lines.next().await {
-        let command = command_result?;
-        let request = match parse_command(&command) {
+    let mut input = io::BufReader::new(io::stdin()).lines();
+    while let Some(line_result) = input.next().await {
+        let line = line_result?;
+        let command = match parse_command_line(&line) {
             Some(request) => request,
             None => {
-                eprintln!("unrecognized command: {:?}", command);
+                eprintln!("unrecognized command: {:?}", line);
                 continue;
             }
         };
-        println!("{:?}", request);
+        println!("{:?}", command);
     }
     Ok(())
 }
@@ -32,7 +32,7 @@ async fn main() {
     let _ = send_commands().await;
 }
 
-fn parse_command(line: &str) -> Option<FromClient> {
+fn parse_command_line(line: &str) -> Option<FromClient> {
     let (command, rest) = get_next_token(line)?;
 
     if command == "post" {
