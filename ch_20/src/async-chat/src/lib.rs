@@ -30,7 +30,6 @@ fn test_from_client_json() {
         message: Arc::new("Basenjis rule!".into()),
     };
     let post = serde_json::to_value(&from_client).unwrap();
-
     assert_eq!(
         post,
         serde_json::json!({ "Post": { "group_name": "Dogs", "message": "Basenjis rule!" } })

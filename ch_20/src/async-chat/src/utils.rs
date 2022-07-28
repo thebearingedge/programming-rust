@@ -8,23 +8,23 @@ use std::marker::Unpin;
 pub type ChatError = Box<dyn Error + Send + Sync + 'static>;
 pub type ChatResult<T> = Result<T, ChatError>;
 
-pub async fn send_as_json<S, D>(socket: &mut S, data: &D) -> ChatResult<()>
+pub async fn write_json<W, D>(writeable: &mut W, data: &D) -> ChatResult<()>
 where
-    S: Write + Unpin,
+    W: Write + Unpin,
     D: Serialize,
 {
     let mut json = serde_json::to_string(data)?;
     json.push('\n');
-    socket.write_all(json.as_bytes()).await?;
+    writeable.write_all(json.as_bytes()).await?;
     Ok(())
 }
 
-pub async fn receive_as_json<S, D>(socket: S) -> impl Stream<Item = ChatResult<D>>
+pub fn read_json<R, D>(readable: R) -> impl Stream<Item = ChatResult<D>>
 where
-    S: BufRead + Unpin,
+    R: BufRead + Unpin,
     D: DeserializeOwned,
 {
-    socket.lines().map(|line_result| -> ChatResult<D> {
+    readable.lines().map(|line_result| -> ChatResult<D> {
         let line = line_result?;
         let data = serde_json::from_str::<D>(&line)?;
         Ok(data)
