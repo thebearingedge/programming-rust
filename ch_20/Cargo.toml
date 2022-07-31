@@ -26,16 +26,16 @@ name = "many_requests_proper"
 path = "src/many_requests_proper.rs"
 
 [[bin]]
-name = "chat_server"
-path = "src/async-chat/src/bin/server/main.rs"
+name = "async_chat_server"
+path = "src/async_chat/src/bin/server/main.rs"
 
 [[bin]]
-name = "chat_client"
-path = "src/async-chat/src/bin/client.rs"
+name = "async_chat_client"
+path = "src/async_chat/src/bin/client/main.rs"
 
 [lib]
-name = "chat_lib"
-path = "src/async-chat/src/lib.rs"
+name = "async_chat_lib"
+path = "src/async_chat/src/lib.rs"
 
 [dependencies]
 async-std = { version = "1.12.0", features = ["attributes", "unstable"] }
