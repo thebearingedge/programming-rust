@@ -17,7 +17,7 @@ impl Chat {
             .unwrap()
             .entry(group_name.clone())
             .or_insert_with(|| Arc::new(Group::new(group_name)))
-            .join(client);
+            .add_client(client);
     }
 
     pub fn post_to_group(&self, group_name: &String, message: Arc<String>) -> Option<()> {
@@ -31,21 +31,24 @@ impl Chat {
 
 struct Group {
     name: Arc<String>,
-    sender: broadcast::Sender<Arc<String>>,
+    channel: broadcast::Sender<Arc<String>>,
 }
 
 impl Group {
     fn new(name: Arc<String>) -> Self {
         let (sender, _) = broadcast::channel(1000);
-        Self { name, sender }
+        Self {
+            name,
+            channel: sender,
+        }
     }
 
-    fn join(&self, client: Arc<Client>) {
+    fn add_client(&self, client: Arc<Client>) {
         let group_name = self.name.clone();
-        let mut receiver = self.sender.subscribe();
+        let mut group_messages = self.channel.subscribe();
         task::spawn(async move {
             loop {
-                let message = match receiver.recv().await {
+                let message = match group_messages.recv().await {
                     Ok(message) => FromServer::Message {
                         group_name: group_name.clone(),
                         message: message.clone(),
@@ -63,6 +66,6 @@ impl Group {
     }
 
     fn post(&self, message: Arc<String>) {
-        let _ = self.sender.send(message);
+        let _ = self.channel.send(message);
     }
 }

@@ -4,31 +4,40 @@ use async_chat_lib::{
     FromClient, FromServer,
 };
 use async_std::{
-    io::BufReader,
+    io::{prelude::*, BufReader},
     net::TcpStream,
     prelude::*,
     sync::{Arc, Mutex},
 };
 
-pub struct Client(Mutex<TcpStream>);
+pub struct Client {
+    input: TcpStream,
+    output: Mutex<TcpStream>,
+}
 
 impl Client {
     pub fn new(socket: TcpStream) -> Self {
-        Self(Mutex::new(socket))
+        Self {
+            input: socket.clone(),
+            output: Mutex::new(socket),
+        }
     }
 
     pub async fn send(&self, message: FromServer) -> ChatResult<()> {
-        let mut socket = self.0.lock().await;
+        let mut socket = self.output.lock().await;
         utils::write_json(&mut *socket, &message).await?;
         socket.flush().await?;
         Ok(())
     }
+
+    fn get_input_stream(&self) -> impl Stream<Item = ChatResult<FromClient>> {
+        utils::read_json(BufReader::new(self.input.clone()))
+    }
 }
 
-pub async fn serve(socket: TcpStream, chat: Arc<Chat>) -> ChatResult<()> {
-    let client = Arc::new(Client::new(socket.clone()));
-    let mut stream = utils::read_json(BufReader::new(socket));
-    while let Some(payload) = stream.next().await {
+pub async fn serve(client: Arc<Client>, chat: Arc<Chat>) -> ChatResult<()> {
+    let mut from_client = client.get_input_stream();
+    while let Some(payload) = from_client.next().await {
         match payload? {
             FromClient::Join { group_name } => chat.join_group(group_name, client.clone()),
             FromClient::Post {
