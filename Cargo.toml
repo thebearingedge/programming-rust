@@ -2,4 +2,5 @@
 
 members = [
   "ch_20",
+  "tokio_chat"
 ]
