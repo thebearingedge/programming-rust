@@ -1,6 +1,6 @@
 use crate::cli;
 use tokio::{
-    io::{self, AsyncBufReadExt, AsyncWriteExt, BufReader},
+    io::{self, AsyncBufReadExt, BufReader},
     net::tcp::{ReadHalf, WriteHalf},
 };
 use tokio_chat_lib::{
@@ -24,13 +24,12 @@ pub async fn send_commands(mut socket: WriteHalf<'_>) -> ChatResult<()> {
             None => continue,
         };
         utils::write_json(&mut socket, &command).await?;
-        socket.flush().await?;
     }
     Ok(())
 }
 
 pub async fn handle_replies(socket: ReadHalf<'_>) -> ChatResult<()> {
-    let mut stream = utils::read_json(io::BufReader::new(socket));
+    let mut stream = utils::read_json(BufReader::new(socket));
     while let Some(data) = stream.next().await {
         match data? {
             FromServer::Message {
